@@ -6,8 +6,8 @@ function Home() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4">
-      <div className="flex items-center justify-center gap-1 text-shadow-2xs">
+    <div className="flex h-screen flex-col items-center  justify-center gap-4">
+      <div className="fixed top-4 left-4 flex items-center justify-center  gap-1 text-shadow-2xs z-50">
         <TiTree size={28} className="text-green-800" />
         <h3 className="">Club Campestre</h3>
       </div>
@@ -22,16 +22,16 @@ function Home() {
             className="input validator text-sm"
             required
             placeholder="Ej: Juan Pérez"
-            pattern="[A-Za-z][A-Za-z0-9\-]*"
+            pattern="[A-Za-z][A-Za-z0-9\- ]*"
             minLength={3}
             maxLength={30}
-            title="Only letters, numbers or dash"
+            title="Only letters, numbers, dash or spaces"
           />
-          {/* <p className="validator-hint">
+          <p className="validator-hint hidden">
             Debe tener entre 3 y 30 caracteres
             <br />
-            que contenga sólo letras, números o guiones.
-          </p> */}
+            que contenga sólo letras, números, guiones o espacios.
+          </p>
         </div>
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Número de Identificación</label>
@@ -41,47 +41,63 @@ function Home() {
             required
             placeholder="1234567890"
             pattern="[0-9]*"
-            minLength={10}
+            minLength={7}
             maxLength={10}
-            title="Must be 10 digits"
+            title="Minimo 7 digitos!"
           />
-          {/* <p className="validator-hint">Must be 10 digits</p> */}
+          <p className="validator-hint hidden">Minimo 7 digitos!</p>
         </div>
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Contraseña</label>
-            <div className="relative">
+          <div className="relative ">
             <input
               type={showPassword ? "text" : "password"}
               className="input validator tabular-nums"
               required
               placeholder="*********"
-              pattern="[0-9]*"
-              minLength={10}
-              maxLength={10}
-              title="Must be 10 digits"
+              minLength={8}
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Debe tener más de 8 caracteres, incluyendo número, letra minúscula y letra mayúscula"
             />
+            <p className="validator-hint hidden">
+              Debe tener más de 8 caracteres, incluyendo
+              <br />
+              Al menos un número
+              <br />
+              Al menos una letra minúscula
+              <br />
+              Al menos una letra mayúscula
+            </p>
             <div
-              className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto cursor-pointer"
+              className="pointer-events-auto absolute top-[5px] right-0 flex cursor-pointer items-center pr-3"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <IoEyeOffOutline  />
+                <div className="rounded-md border-[1px] border-gray-300 bg-white p-1 px-2 hover:border-stone-400 hover:bg-stone-300">
+                  <IoEyeOffOutline className="text-gray-600" size={14} />
+                </div>
               ) : (
-                <IoEyeOutline  />
+                <div className="rounded-md border-[1px] border-gray-300 bg-white p-1 px-2 hover:border-stone-400 hover:bg-stone-300">
+                  <IoEyeOutline className="text-gray-600" size={14} />
+                </div>
               )}
             </div>
-            </div>
+          </div>
           {/* <p className="validator-hint">Must be 10 digits</p> */}
         </div>
 
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Rol</label>
-          <select className="select validator h-[35px] bg-stone-100 shadow-xs w-full" required>
+          <select
+            className="select validator h-[35px] w-full bg-stone-100 shadow-xs"
+            required
+          >
             <option disabled selected value="">
               Escoge:
             </option>
-            <option>Tabs</option>
-            <option>Spaces</option>
+            <option>Cliente</option>
+            <option>Administrador</option>
+            <option>Mesero</option>
           </select>
           {/* <p className="validator-hint">Must be 10 digits</p> */}
         </div>

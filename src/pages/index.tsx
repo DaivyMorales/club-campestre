@@ -1,23 +1,54 @@
 import React, { useState } from "react";
 import { TiTree } from "react-icons/ti";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import { useFormik } from "formik";
+import axios from "axios";
 
 function Home() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      id: "",
+      password: "",
+      roleId: "", // changed from 0 to ""
+    },
+    onSubmit: async (values) => {
+      const parsedValues = {
+        ...values,
+        roleId: Number(values.roleId), // ensure roleId is a number
+      };
+      console.log(parsedValues)
+      try {
+        const response = await axios.post("/api/user", parsedValues);
+        console.log("Response:", response.data);
+        // Handle success (e.g., show a success message, redirect)
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle error (e.g., show an error message)
+      }
+    },
+  });
+
   return (
-    <div className="flex h-screen flex-col items-center  justify-center gap-4">
-      <div className="fixed top-4 left-4 flex items-center justify-center  gap-1 text-shadow-2xs z-50">
+    <div className="flex h-screen flex-col items-center justify-center gap-4">
+      <div className="fixed top-4 left-4 z-50 flex items-center justify-center gap-1 text-shadow-2xs">
         <TiTree size={28} className="text-green-800" />
         <h3 className="">Club Campestre</h3>
       </div>
 
       {/* <h1 className="font-medium text-stone-600">Ingresa a</h1> */}
 
-      <div className="flex w-[350px] flex-col items-center justify-center gap-4">
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex w-[350px] flex-col items-center justify-center gap-4"
+      >
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Nombre</label>
           <input
+            name="name"
+            onChange={formik.handleChange}
             type="input"
             className="input validator text-sm"
             required
@@ -36,6 +67,8 @@ function Home() {
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Número de Identificación</label>
           <input
+            name="id"
+            onChange={formik.handleChange}
             type="tel"
             className="input validator h-[35px] bg-stone-100 tabular-nums shadow-xs"
             required
@@ -49,8 +82,10 @@ function Home() {
         </div>
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Contraseña</label>
-          <div className="relative ">
+          <div className="relative">
             <input
+              name="password"
+              onChange={formik.handleChange}
               type={showPassword ? "text" : "password"}
               className="input validator tabular-nums"
               required
@@ -89,23 +124,28 @@ function Home() {
         <div className="items-centers flex w-full flex-col justify-center gap-1">
           <label htmlFor="">Rol</label>
           <select
+            name="roleId"
+            onChange={formik.handleChange}
             className="select validator h-[35px] w-full bg-stone-100 shadow-xs"
             required
           >
             <option disabled selected value="">
               Escoge:
             </option>
-            <option>Cliente</option>
-            <option>Administrador</option>
-            <option>Mesero</option>
+            <option value={2}>Cliente</option>
+            <option value={1}>Administrador</option>
+            <option value={3}>Mesero</option>
           </select>
           {/* <p className="validator-hint">Must be 10 digits</p> */}
         </div>
 
-        <button className="btn w-full border-[1px] border-green-500 bg-green-300 text-lg font-light shadow-inner">
+        <button
+          type="submit"
+          className="btn w-full border-[1px] border-green-500 bg-green-300 text-lg font-light shadow-inner"
+        >
           Ingresar{" "}
         </button>
-      </div>
+      </form>
     </div>
   );
 }

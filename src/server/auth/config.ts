@@ -15,15 +15,11 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      roleId: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -71,13 +67,12 @@ export const authConfig = {
         );
 
         if (!passwordMatch)
-          throw new Error("Your email or password is incorrect");
+          throw new Error("Your id or password are incorrect");
 
         return {
           id: userFound.id,
           name: userFound.name,
-          email: userFound.email,
-          role: userFound.roleId,
+          roleId: userFound.roleId,
           // Add any other properties you need in the session
         };
       },
@@ -93,6 +88,7 @@ export const authConfig = {
     },
     session({ session, token }) {
       session.user.id = token.id as string;
+      session.user.roleId = token.roleId as string; // add this line
       return session;
     },
   },

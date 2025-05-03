@@ -10,7 +10,6 @@ function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { data: session, status } = useSession();
-  console.log("Session:", session);
 
   const formik = useFormik({
     initialValues: {

@@ -22,7 +22,7 @@ function Navbar({ children }: { children: React.ReactNode }) {
               <RiUser5Fill size={18} className="text-stone-400" />
             </button> */}
             {status === "authenticated" ? (
-                <div className="dropdown dropdown-end">
+              <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
                   role="button"
@@ -37,14 +37,14 @@ function Navbar({ children }: { children: React.ReactNode }) {
                   <li className="">
                     <a>Item 1</a>
                   </li>
-                  <li className="flex items-center ">
+                  <li className="flex items-center">
                     <a
-                    className="text-red-600"
+                      className="text-red-600"
                       onClick={() => {
                         signOut();
                       }}
                     >
-                     <TiPower size={17}/> Cerrar Sesión
+                      <TiPower size={17} /> Cerrar Sesión
                     </a>
                   </li>
                 </ul>

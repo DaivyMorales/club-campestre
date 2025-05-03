@@ -31,7 +31,7 @@ const ToggleComponent = ({ value, onChange }: ToggleComponentProps) => {
         <div className="flex flex-col items-start">
           <p>Nequi</p>
           <p className="text-sm text-gray-500">
-            Lorem ipsum dolor sit, amet consectetur
+            Paga facilmente con Nequi y disfrutatu reserva
           </p>
         </div>
       </div>
@@ -58,7 +58,7 @@ const ToggleComponent = ({ value, onChange }: ToggleComponentProps) => {
         <div className="flex flex-col items-start">
           <p>Transferencia bancaria</p>
           <p className="text-sm text-gray-500">
-            Lorem ipsum dolor sit, amet consectetur 
+            Envianos el dinero a nuestro número de cuenta
           </p>
         </div>
       </div>

@@ -2,6 +2,8 @@ import ToggleComponent from "@/components/ToggleComponent";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Home() {
   const { data: session, status } = useSession();
@@ -12,12 +14,20 @@ function Home() {
   const [endDate, setEndDate] = useState("");
   const [numberOfPeople, setNumberOfPeople] = useState(0);
   // Add state for payMethod
-  const [payMethod, setPayMethod] = useState<"Nequi" | "Transferencia Bancaria">("Nequi");
+  const [payMethod, setPayMethod] = useState<
+    "Nequi" | "Transferencia Bancaria"
+  >("Nequi");
+
+  // Alert state
+  const [alert, setAlert] = useState<null | {
+    type: "success" | "error";
+    message: string;
+  }>(null);
 
   const formik = useFormik({
     initialValues: {
       completeName: "",
-      id: session?.user?.id,
+      identificationUser: session?.user?.id,
       email: "",
       numberOfPeople: 0,
       startDate: "",
@@ -25,20 +35,68 @@ function Home() {
       finalPrice: 0,
       payMethod: "nequi",
     },
-    onSubmit: (values) => {
+    onSubmit: async (values, { resetForm }) => {
       console.log(values);
 
-      const sds = {
+      // Convert to ISO-8601 DateTime if values exist
+      const startDateISO = values.startDate
+        ? new Date(values.startDate).toISOString()
+        : "";
+      const endDateISO = values.endDate
+        ? new Date(values.endDate).toISOString()
+        : "";
+
+      // Calculate final price as string
+      let finalPrice = "0";
+      if (startDate && endDate && numberOfPeople) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = end.getTime() - start.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays > 0) {
+          const pricePerPersonPerDay = 12300;
+          finalPrice = (
+            diffDays *
+            Number(numberOfPeople) *
+            pricePerPersonPerDay
+          ).toString();
+        }
+      }
+
+      const body = {
         completeName: values.completeName,
-        id: session?.user?.id,
         email: values.email,
         numberOfPeople: values.numberOfPeople,
-        startDate: values.startDate,
-        endDate: values.endDate,
-        finalPrice: 140000,
+        startDate: startDateISO,
+        endDate: endDateISO,
+        finalPrice, // as string
         payMethod: values.payMethod,
+        userId: session?.user?.id,
+      };
+
+      console.log(body);
+
+      try {
+        const response = await axios.post("/api/reservation", body);
+        if (response.status === 200) {
+          // Close modal and reset form/inputs
+          handleCloseModal();
+          // Show Tailwind alert
+          setAlert({
+            type: "success",
+            message:
+              "¡Reserva realizada con éxito! 🎉 Te hemos enviado un correo con los detalles.",
+          });
+        }
+        console.log(response.data);
+      } catch (error) {
+        setAlert({
+          type: "error",
+          message:
+            "Ocurrió un error al realizar la reserva. Intenta nuevamente.",
+        });
+        console.error(error);
       }
-      
     },
   });
 
@@ -47,15 +105,70 @@ function Home() {
     formik.setFieldValue("payMethod", payMethod);
   }, [payMethod]);
 
+  // Auto-hide alert after 4 seconds
+  React.useEffect(() => {
+    if (alert) {
+      const timeout = setTimeout(() => setAlert(null), 4000);
+      return () => clearTimeout(timeout);
+    }
+  }, [alert]);
+
+  // Helper to reset all form and local states
+  const resetAll = () => {
+    formik.resetForm();
+    setStartDate("");
+    setEndDate("");
+    setNumberOfPeople(0);
+    setPayMethod("Nequi");
+
+  };
+
+  const handleCloseModal = () => {
+    const modal = document.getElementById(
+      "my_modal_1",
+    ) as HTMLDialogElement | null;
+    if (modal) modal.close();
+    resetAll();
+  };
+
   return (
     <div className="flex min-h-[720px] flex-col items-center justify-center py-2">
+      {/* Animated Tailwind Alert with framer-motion */}
+      <AnimatePresence>
+        {alert && (
+          <motion.div
+            key="alert"
+            initial={{ opacity: 0, y: -40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -40, scale: 0.95 }}
+            transition={{ duration: 0.35, type: "spring" }}
+            className={`fixed top-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg px-4 py-3 shadow-lg transition-all ${alert.type === "success" ? "border border-green-400 bg-green-100 text-green-800" : "border border-red-400 bg-red-100 text-red-800"} `}
+            role="alert"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{alert.message}</span>
+              <button
+                className="ml-4 text-xl leading-none font-bold focus:outline-none"
+                onClick={() => setAlert(null)}
+                aria-label="Cerrar"
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <button
         className="btn"
         onClick={() => {
           const modal = document.getElementById(
             "my_modal_1",
           ) as HTMLDialogElement | null;
-          if (modal) modal.showModal();
+          if (modal) {
+            modal.showModal();
+            resetAll();
+          }
         }}
       >
         Reservar Estancia
@@ -68,10 +181,8 @@ function Home() {
           <div className="flex flex-col items-start justify-start">
             <h4 className=""> Reservar Estancia</h4>
             <p className="text-sm text-gray-500">
-              Your project will have its own dedicated instance and full
-              Postgres database. <br />
-              An API will be set up so you can easily interact with your new
-              database.
+              Tu reserva en el Club Campestre contará con una instancia dedicada. <br />
+              Te enviaremos un correo para que recibas los detalles de tu reserva.
             </p>
           </div>
 
@@ -93,6 +204,7 @@ function Home() {
               minLength={3}
               maxLength={30}
               title="Only letters, numbers, dash or spaces"
+              value={formik.values.completeName}
             />
           </div>
           <div className="flex w-full items-center justify-start">
@@ -110,7 +222,7 @@ function Home() {
               minLength={3}
               maxLength={30}
               title="Only letters, numbers, dash or spaces"
-              value={session?.user?.id}
+              value={session?.user?.id || ""}
             />
           </div>
           <div className="flex w-full items-center justify-start">
@@ -124,6 +236,7 @@ function Home() {
               className="input text-sm"
               required
               placeholder="Ej: myemail@cc.com"
+              value={formik.values.email}
             />
           </div>
 
@@ -135,7 +248,7 @@ function Home() {
             </label>
             <input
               name="numberOfPeople"
-              onChange={e => {
+              onChange={(e) => {
                 formik.handleChange(e);
                 setNumberOfPeople(Number(e.target.value));
               }}
@@ -147,6 +260,7 @@ function Home() {
               minLength={3}
               maxLength={30}
               title="Only letters, numbers, dash or spaces"
+              value={numberOfPeople || ""}
             />
           </div>
 
@@ -156,13 +270,14 @@ function Home() {
             </label>
             <input
               name="startDate"
-              onChange={e => {
+              onChange={(e) => {
                 formik.handleChange(e);
                 setStartDate(e.target.value);
               }}
               type="date"
               className="input text-sm"
               required
+              value={startDate}
             />
           </div>
           <div className="flex w-full items-center justify-start">
@@ -171,7 +286,7 @@ function Home() {
             </label>
             <input
               name="endDate"
-              onChange={e => {
+              onChange={(e) => {
                 formik.handleChange(e);
                 setEndDate(e.target.value);
               }}
@@ -179,6 +294,7 @@ function Home() {
               className="input text-sm"
               required
               min={startDate || undefined}
+              value={endDate}
             />
           </div>
 
@@ -197,7 +313,8 @@ function Home() {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays <= 0) return "0 COP";
                 const pricePerPersonPerDay = 12300; // example price
-                const total = diffDays * Number(numberOfPeople) * pricePerPersonPerDay;
+                const total =
+                  diffDays * Number(numberOfPeople) * pricePerPersonPerDay;
                 return `${total.toLocaleString()} COP`;
               })()}
             </div>
@@ -207,10 +324,7 @@ function Home() {
             <label htmlFor="" className="w-[180px]">
               Metodo de pago
             </label>
-            <ToggleComponent
-              value={payMethod}
-              onChange={setPayMethod}
-            />
+            <ToggleComponent value={payMethod} onChange={setPayMethod} />
           </div>
 
           <div className="h-[1px] w-full bg-gray-300" />
@@ -219,12 +333,14 @@ function Home() {
               <button className="btn h-[28px] border-[1px] border-green-500 bg-green-300 text-sm font-light">
                 Reservar
               </button>
-              <form method="dialog ">
-                <button className="btn h-[28px] border-[1px] border-gray-300 text-sm font-light">
-                  Cerrar
-                </button>
-                {/* if there is a button in form, it will close the modal */}
-              </form>
+              <button
+                type="button"
+                className="btn h-[28px] border-[1px] border-gray-300 text-sm font-light"
+                onClick={handleCloseModal}
+              >
+                Cerrar
+              </button>
+              {/* if there is a button in form, it will close the modal */}
             </div>
           </div>
         </form>

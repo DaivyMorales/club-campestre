@@ -79,6 +79,19 @@ function Home() {
       try {
         const response = await axios.post("/api/reservation", body);
         if (response.status === 200) {
+          // Send reservation email
+          await axios.post("/api/email/sendReservation", {
+            to: values.email,
+            reservation: {
+              completeName: values.completeName,
+              email: values.email,
+              numberOfPeople: values.numberOfPeople,
+              startDate: startDateISO,
+              endDate: endDateISO,
+              finalPrice,
+              payMethod: values.payMethod,
+            },
+          });
           // Close modal and reset form/inputs
           handleCloseModal();
           // Show Tailwind alert

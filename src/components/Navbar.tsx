@@ -4,6 +4,8 @@ import { TiTree } from "react-icons/ti";
 import { RiUser5Fill } from "react-icons/ri";
 import { TiPower } from "react-icons/ti";
 
+import Cart from "./Cart";
+
 function Navbar({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
 
@@ -22,6 +24,8 @@ function Navbar({ children }: { children: React.ReactNode }) {
               <RiUser5Fill size={18} className="text-stone-400" />
             </button> */}
             {status === "authenticated" ? (
+              <>
+            
               <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
@@ -49,6 +53,8 @@ function Navbar({ children }: { children: React.ReactNode }) {
                   </li>
                 </ul>
               </div>
+              <Cart/>
+              </>
             ) : (
               <button
                 className="btn h-[28px] border-[1px] border-green-500 bg-green-300 text-sm font-light shadow-inner"

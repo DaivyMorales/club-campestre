@@ -18,7 +18,7 @@ h2 {
 }
 
 h3 {
-  @apply text-xl font-semibold text-stone-800 ;
+  @apply text-xl font-semibold ;
 }
 
 h4 {

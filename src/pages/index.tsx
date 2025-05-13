@@ -6,6 +6,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import ButtonReservation from "@/components/ButtonReservation";
 import { useCartStore } from "@/store/cartStore";
+import ButtonExpandReservation from "@/components/ButtonExpandReservation";
 
 function Home() {
   const addItem = useCartStore((state) => state.addItem);
@@ -52,8 +53,8 @@ function Home() {
       <div className="flex min-h-[720px] flex-col items-center justify-center py-2">
         <div className="text-center text-red-500">
           <p>{error}</p>
-          <button 
-            className="mt-4 btn btn-sm btn-outline" 
+          <button
+            className="btn btn-sm btn-outline mt-4"
             onClick={() => window.location.reload()}
           >
             Retry
@@ -65,7 +66,10 @@ function Home() {
 
   return (
     <div className="flex min-h-[720px] flex-col items-center justify-center py-2">
-      <ButtonReservation/>
+      <div className="flex gap-1">
+        <ButtonReservation />
+        {/* <ButtonExpandReservation /> */}
+      </div>
 
       {/* Render each category */}
       {Object.entries(categories).map(([categoryName, items]) => (
@@ -76,7 +80,7 @@ function Home() {
               <motion.div
                 key={`${categoryName}-${item.id}`}
                 whileHover={{ scale: 1.05 }}
-                className="flex cursor-pointer items-center justify-between border-b-[1px] border-gray-200 px-2 py-3 relative"
+                className="relative flex cursor-pointer items-center justify-between border-b-[1px] border-gray-200 px-2 py-3"
                 onClick={() =>
                   addItem({
                     id: `${categoryName}-${item.id}`,
@@ -91,7 +95,9 @@ function Home() {
                   <p className="text-md w-[150px] font-light text-gray-500">
                     {item.description}
                   </p>
-                  <p className="font-semibold">$ {parseFloat(item.price).toLocaleString()}</p>
+                  <p className="font-semibold">
+                    $ {parseFloat(item.price).toLocaleString()}
+                  </p>
                 </div>
                 <div className="relative">
                   {item.imageUrl && (
@@ -102,7 +108,7 @@ function Home() {
                     />
                   )}
                   {getQuantity(categoryName, item.id) > 0 && (
-                    <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold shadow">
+                    <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white shadow">
                       {getQuantity(categoryName, item.id)}
                     </span>
                   )}

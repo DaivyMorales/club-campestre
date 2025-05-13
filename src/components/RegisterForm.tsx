@@ -1,13 +1,16 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { TiTree } from "react-icons/ti";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { useFormik } from "formik";
 import axios from "axios";
 import LoginForm from "@/components/LoginForm";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter();
 
   const { data: session, status } = useSession();
 
@@ -26,7 +29,14 @@ function RegisterForm() {
       console.log(parsedValues);
       try {
         const response = await axios.post("/api/user", parsedValues);
-        console.log("Response:", response.data);
+        if (response.status === 200) {
+          const res = await signIn("credentials", {
+            id: values.id,
+            password: values.password,
+            redirect: false,
+          });
+          router.push("/"); // Redirect to the home page or any other page
+        }
         // Handle success (e.g., show a success message, redirect)
       } catch (error) {
         console.error("Error:", error);

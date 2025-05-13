@@ -5,6 +5,7 @@ import { RiUser5Fill } from "react-icons/ri";
 import { TiPower } from "react-icons/ti";
 
 import Cart from "./Cart";
+import ButtonExpandReservation from "./ButtonExpandReservation";
 
 function Navbar({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -25,7 +26,8 @@ function Navbar({ children }: { children: React.ReactNode }) {
             </button> */}
             {status === "authenticated" ? (
               <>
-            
+               
+               {/* <ButtonExpandReservation/> */}
               <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
@@ -39,7 +41,7 @@ function Navbar({ children }: { children: React.ReactNode }) {
                   className="dropdown-content menu bg-base-100 rounded-box z-1 w-[150px] border-[1px] border-gray-300 shadow-sm"
                 >
                   <li className="">
-                    <a>Item 1</a>
+                  
                   </li>
                   <li className="flex items-center">
                     <a

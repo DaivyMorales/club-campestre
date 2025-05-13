@@ -23,7 +23,7 @@ function Cart() {
         {/* Page content here */}
         <label
           htmlFor="my-drawer-4"
-          className="drawer-button flex cursor-pointer items-center gap-1 rounded-md border-[1px] border-gray-300 p-2 text-stone-400 shadow-sm"
+          className="drawer-button flex cursor-pointer justify-center items-center gap-1 rounded-md border-[1px] border-gray-300 p-2 text-stone-400 shadow-sm"
         >
           <div className="indicator">
             <span className="indicator-item flex h-[18px] w-[18px] items-center justify-center rounded-full bg-green-400 text-[10px] font-bold text-white">

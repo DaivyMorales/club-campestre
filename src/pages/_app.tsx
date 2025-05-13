@@ -4,6 +4,7 @@ import { Crimson_Pro } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { type Session } from "next-auth";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
@@ -26,6 +27,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <SessionProvider session={session}>
+      <Head>
+        <script
+          src="//code.tidio.co/zijqki1ga0ukonzwfvii0wo5rruzqng1.js"
+          async
+        ></script>
+      </Head>
       <div className={IbmPlexSans.className}>
         {!isAuthRoute ? (
           <Navbar>

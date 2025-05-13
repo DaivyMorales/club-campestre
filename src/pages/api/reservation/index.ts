@@ -13,6 +13,11 @@ type ReservationRequestBody = {
   userId: string;
 };
 
+type ReservationUpdateBody = {
+  id: string;
+  finalPrice: string;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -51,8 +56,48 @@ export default async function handler(
       }
       return res.status(500).json({ message: error });
     }
+  } else if (req.method === "GET") {
+    const { userId } = req.query;
+
+    if (!userId || typeof userId !== "string") {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    try {
+      const reservations = await db.reservation.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+      return res.status(200).json(reservations);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "An unknown error occurred" });
+    }
+  } else if (req.method === "PUT") {
+    const { id, finalPrice } = req.body as ReservationUpdateBody;
+
+    if (!id) {
+      return res.status(400).json({ message: "Reservation ID is required" });
+    }
+
+    try {
+      const updatedReservation = await db.reservation.update({
+        where: { id },
+        data: { finalPrice },
+      });
+      
+      return res.status(200).json(updatedReservation);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "An unknown error occurred" });
+    }
   } else {
-    res.setHeader("Allow", ["POST"]);
+    res.setHeader("Allow", ["GET", "POST", "PUT"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

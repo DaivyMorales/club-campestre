@@ -67,6 +67,7 @@ model User {
     reservations  Reservation[]
     roleId        String?
     role          Role?         @relation(fields: [roleId], references: [id], onDelete: Cascade) // Agregar onDelete: Cascade
+    cart          Cart?
 }
 
 model VerificationToken {
@@ -94,4 +95,47 @@ model Reservation {
     userId         String
     payMethod      String
     user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+    id        String     @id @default(cuid())
+    userId    String     @unique
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    items     CartItem[] // Add this line to establish the relation to CartItem
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model Item {
+    id          String     @id @default(cuid())
+    name        String
+    description String
+    price       String
+    imageUrl    String
+    categoryId  String     // Foreign key to Category
+    category    Category   @relation(fields: [categoryId], references: [id])
+    carts       CartItem[] // Add this line to establish the relation to CartItem
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+}
+
+// Renamed from CartegotyItem to Category
+model Category {
+    id    String @id @default(cuid())
+    name  String @unique
+    items Item[] // Add this relation field to establish the one-to-many relationship
+}
+
+// Add this new model to represent the many-to-many relationship
+model CartItem {
+    id        String   @id @default(cuid())
+    cartId    String
+    itemId    String
+    quantity  Int      @default(1)
+    cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([cartId, itemId])
 }

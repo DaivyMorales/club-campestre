@@ -187,7 +187,7 @@ function ButtonReservation() {
       <dialog id="my_modal_1" className="modal">
         <form
           onSubmit={formik.handleSubmit}
-          className="modal-box flex flex-col items-start justify-start gap-3"
+          className="modal-box flex flex-col text-black items-start justify-start gap-3"
         >
           <div className="flex flex-col items-start justify-start">
             <h4 className=""> Reservar Estancia</h4>

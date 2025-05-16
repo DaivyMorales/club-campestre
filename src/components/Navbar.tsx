@@ -3,6 +3,7 @@ import React from "react";
 import { TiTree } from "react-icons/ti";
 import { RiUser5Fill } from "react-icons/ri";
 import { TiPower } from "react-icons/ti";
+import { MdRestaurantMenu } from "react-icons/md";
 
 import Cart from "./Cart";
 import ButtonExpandReservation from "./ButtonExpandReservation";
@@ -16,19 +17,24 @@ function Navbar({ children }: { children: React.ReactNode }) {
         <nav className="flex items-center justify-between bg-white p-4">
           <div className="z-50 flex items-center justify-center gap-1">
             <TiTree size={20} className="text-stone-400" />
-            <p className="text-[20px] font-semibold text-stone-400">
+            <p 
+              onClick={() => window.location.href = '/'} 
+              className="text-[20px] font-semibold text-stone-400 cursor-pointer hover:text-stone-500"
+            >
               Club Campestre
             </p>
           </div>
-          <ul className="flex space-x-4">
-            {/* <button className="cursor-pointer rounded-md border-[1px] border-gray-300 p-2 shadow-sm">
-              <RiUser5Fill size={18} className="text-stone-400" />
-            </button> */}
+          <ul className="flex items-center space-x-4">
             {status === "authenticated" ? (
               <>
-               
-               {/* <ButtonExpandReservation/> */}
-              <div className="dropdown dropdown-end">
+                <button
+                  onClick={() => window.location.href = '/restaurant'}
+                  className="flex items-center gap-2 rounded-md border-[1px] border-gray-300 p-2 text-stone-400 shadow-sm hover:bg-gray-50"
+                >
+                  <MdRestaurantMenu size={18} />
+                  <span className="text-sm">Restaurante</span>
+                </button>
+                <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
                   role="button"
@@ -40,8 +46,8 @@ function Navbar({ children }: { children: React.ReactNode }) {
                   tabIndex={0}
                   className="dropdown-content menu bg-base-100 rounded-box z-1 w-[150px] border-[1px] border-gray-300 shadow-sm"
                 >
-                  <li className="">
-                  
+                  <li className="px-3 font-semibold">
+                  {session?.user?.name}
                   </li>
                   <li className="flex items-center">
                     <a
